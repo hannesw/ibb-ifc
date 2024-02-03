@@ -101,7 +101,8 @@ def _extract(model: ifcopenshell.file) -> tuple:
 
 def _write_to_excel(qto_water_gas, qto_sewers, qto_inlets, qto_manholes, ifc_file_path) -> None:
     # Write DataFrame to Excel file
-    with pd.ExcelWriter(os.path.join(ifc_file_path, 'Mengen.xlsx')) as writer:
+    excel_file_path = os.path.splitext(ifc_file_path)[0] + '_Mengen.xlsx'
+    with pd.ExcelWriter(excel_file_path) as writer:
         # Write Wasser- und Gasleitungen DataFrame to Excel
         df_water_gas = pd.DataFrame(qto_water_gas)
         df_water_gas.to_excel(writer, sheet_name='Wasser_Gas', index=False)
@@ -149,6 +150,14 @@ def _write_to_excel(qto_water_gas, qto_sewers, qto_inlets, qto_manholes, ifc_fil
         # Add pivot table for Schächte to new sheet
         pivot_table_manholes.to_excel(
             writer, sheet_name='Schächte_Auswertung')
+
+        # Find manholes with multiple incoming sewers. For this we make use of the "Von-Schacht" column
+        # and count the number of occurences of each value. We then filter for those that occur more than once.
+        df_multiple_inlets = df_sewers[df_sewers['Von-Schacht'].notnull()]
+        df_multiple_inlets = df_multiple_inlets[df_multiple_inlets.duplicated(
+            subset='Von-Schacht', keep=False)]
+        df_multiple_inlets.to_excel(
+            writer, sheet_name='Zusätzliche Anschlüsse', index=False)
 
 
 def get(ifc_file_path: str) -> None:

@@ -64,7 +64,32 @@ def _to_float(value):
     return float(value)
 
 
-def _change_property(model, name, dimension_factor):
+def _correct_manhole_names(model):
+    # Look for the properties "ID_DRAIN1" and "ID_DRAIN2" in the Schacht pset. Remove ",-" from the end of the strings.
+    for sewer in ifcopenshell.util.selector.filter_elements(model, "IfcFlowSegment, IfcFlowTreatmentDevice"):
+        psets = ifcopenshell.util.element.get_psets(sewer)
+        for pset in psets:
+            print(pset.Name)
+        if "Haltung" not in psets and "Leitung" not in psets:
+            continue
+        if "Haltung" in psets:
+            # skip if key error ID_DRAIN1 or ID_DRAIN2. It's likely that this is not a valid sewer with geometry
+            if "ID_DRAIN1" not in psets["Haltung"] or "ID_DRAIN2" not in psets["Haltung"]:
+                continue
+            psets["Haltung"]["ID_DRAIN1"] = psets["Haltung"]["ID_DRAIN1"].replace(
+                ",-", "")
+            psets["Haltung"]["ID_DRAIN2"] = psets["Haltung"]["ID_DRAIN2"].replace(
+                ",-", "")
+        else:
+            if "ID_DRAIN1" not in psets["Leitung"] or "ID_DRAIN2" not in psets["Leitung"]:
+                continue
+            psets["Leitung"]["ID_DRAIN1"] = psets["Leitung"]["ID_DRAIN1"].replace(
+                ",-", "")
+            psets["Leitung"]["ID_DRAIN2"] = psets["Leitung"]["ID_DRAIN2"].replace(
+                ",-", "")
+
+
+def _change_property_type(model, name, dimension_factor):
     properties = ifcopenshell.util.selector.filter_elements(
         model,
         f"IfcPropertySingleValue, Name={name}"
@@ -89,27 +114,17 @@ def _change_property(model, name, dimension_factor):
     print(f"Changed {total} properties {name}")
 
 
-def _check_already_processed(ifc_file_path) -> bool:
-    with open(ifc_file_path, "r") as file:
-        for line in file:
-            if "(ber.)" in line or "(ed.)" in line:
-                return False
-    return True
-
-
 def process(ifc_file_path) -> str:
     if not ifc_file_path.endswith(".ifc"):
         raise ValueError("Invalid file format. Only IFC files are supported.")
 
-    if _check_already_processed(ifc_file_path):
-        print("The file has already been processed. Skipping.")
-        return ifc_file_path
-
-    new_file_path = os.path.splitext(ifc_file_path)[0] + "_modified.ifc"
+    new_file_path = os.path.splitext(ifc_file_path)[0] + "_processed.ifc"
     model = ifcopenshell.open(ifc_file_path)
 
+    _correct_manhole_names(model)
+
     for name, dimension_factor in replacing_properties:
-        _change_property(model, name, dimension_factor)
+        _change_property_type(model, name, dimension_factor)
 
     print(f"Saving modified file to {new_file_path}")
     model.write(new_file_path)
