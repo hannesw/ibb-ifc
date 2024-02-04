@@ -14,6 +14,8 @@ numpy = "^1.26.3"
 xlsxwriter = "^3.1.9"
 openpyxl = "^3.1.2"
 odswriter = "^0.4.0"
+customtkinter = "^5.2.2"
+pillow = "^10.2.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

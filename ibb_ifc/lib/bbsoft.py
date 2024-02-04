@@ -114,9 +114,6 @@ def _change_property_type(model, name, dimension_factor):
 
 
 def process(ifc_file_path) -> str:
-    if not ifc_file_path.endswith(".ifc"):
-        raise ValueError("Invalid file format. Only IFC files are supported.")
-
     print(f"Opening {ifc_file_path}")
     new_file_path = os.path.splitext(ifc_file_path)[0] + "_processed.ifc"
     print(f"New file path will be {new_file_path}")

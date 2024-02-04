@@ -161,9 +161,6 @@ def _write_to_excel(qto_water_gas, qto_sewers, qto_inlets, qto_manholes, ifc_fil
 
 
 def get(ifc_file_path: str) -> None:
-    if not ifc_file_path.endswith(".ifc"):
-        raise ValueError("Invalid file format. Only IFC files are supported.")
-
     model = ifcopenshell.open(ifc_file_path)
     qto_water_gas, qto_sewers, qto_inlets, qto_manholes = _extract(model)
     _write_to_excel(qto_water_gas, qto_sewers, qto_inlets,

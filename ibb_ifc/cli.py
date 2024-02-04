@@ -16,6 +16,9 @@ def main():
     args = parser.parse_args()
     # Access the value of the ifc_file_path argument
     ifc_file_path = args.ifc_file_path
+    # check if file has the correct ending
+    if not ifc_file_path.endswith(".ifc"):
+        raise ValueError("Invalid file format. Only IFC files are supported.")
 
     # Call bbsoft processing
     if not args.skip_processing:
