@@ -16,9 +16,8 @@ class App(customtkinter.CTk):
         self.ifc_file_path = ""
 
         # ui setup
+        self.title("IBB IFC-Verarbeitung")
         self.geometry("400x240")
-        print(os.path.join(".", "assets", "logo-ibb.png"))
-        exit()
         self.iconpath = ImageTk.PhotoImage(
             file=os.path.join(".", "assets", "logo-ibb.png"))
         self.wm_iconbitmap()
