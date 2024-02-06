@@ -6,7 +6,9 @@ def build_app():
         "poetry", "run", "pyinstaller", "--onefile",
         "--name=IBB-IFC",
         "--icon=assets/logo-ibb.png",
-        "ibb_ifc\\gui.py"
+        "--hidden-import",
+        "tkinter",
+        "ibb_ifc\\gui.py",
     ]
 
     # Execute the command
