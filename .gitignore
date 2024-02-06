@@ -12,6 +12,7 @@ dist/
 build/
 *.egg
 *.whl
+*.spec
 
 # Poetry
 .poetry/

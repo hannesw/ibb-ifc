@@ -11,4 +11,20 @@ Diese Skripte verarbeiten eine von BBSoft erzeugte IFC-Datei. Hierbei werden ver
 
 Zusätzlich werden verschiedene Massen extrahiert. Diese Funktionalität ist noch sehr rudimentär.
 
+# Verwendung
+
+Einfach das Programm starten und die entsprechend IFC-Datei auswählen.
+
+# Entwicklung
+
+Das Projekt nutzt den Python Paketmanager [Poetry](https://python-poetry.org/docs/).
+
+```
+poetry install
+poetry run python ibb_ifc\cli.py
+poetry run python ibb_ifc\gui.py
+poetry run python build_gui.py
+
+```
+
 (C) 2024 IBB Wörn Ingenieure GmbH
