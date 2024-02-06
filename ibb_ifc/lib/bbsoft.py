@@ -56,6 +56,8 @@ replacing_properties = [
     ["LENGTH", dimension_factors["m"]],  # Rohrlänge
 ]
 
+processed_flag = "IBB Woern Ingenieure - processed"
+
 
 def _to_float(value):
     value = value.replace(" ", "").replace("(ber.)", "").replace("(ed.)", "")
@@ -119,12 +121,25 @@ def process(ifc_file_path) -> str:
     print(f"New file path will be {new_file_path}")
     model = ifcopenshell.open(ifc_file_path)
 
+    # Get modifing organizations
+    organizations = model.by_type("IfcOrganization")
+    # Check if it was already processed. If so return the file path and skip further processing
+    for org in organizations:
+        if processed_flag in org.Name:
+            print(f"File is already processed")
+            return ifc_file_path
+
     print(f"Correcting manhole names")
     _correct_manhole_names(model)
 
     print(f"Changing property types:")
     for name, dimension_factor in replacing_properties:
         _change_property_type(model, name, dimension_factor)
+
+    print(f"Adding processed flag")
+    organization = model.create_entity("IfcOrganization")
+    organization.Name = processed_flag
+    organizations.append(organization)
 
     print(f"Saving modified file")
     model.write(new_file_path)

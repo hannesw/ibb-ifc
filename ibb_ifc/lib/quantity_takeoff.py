@@ -103,61 +103,67 @@ def _write_to_excel(qto_water_gas, qto_sewers, qto_inlets, qto_manholes, ifc_fil
     # Write DataFrame to Excel file
     excel_file_path = os.path.splitext(ifc_file_path)[0] + '_Mengen.xlsx'
     with pd.ExcelWriter(excel_file_path) as writer:
-        # Write Wasser- und Gasleitungen DataFrame to Excel
-        df_water_gas = pd.DataFrame(qto_water_gas)
-        df_water_gas.to_excel(writer, sheet_name='Wasser_Gas', index=False)
-        # Create pivot table for Wasser- und Gasleitungen
-        df_filtered_water_gas = df_water_gas[df_water_gas['Baustatus'] == '1']
-        pivot_table_water_gas = pd.pivot_table(df_filtered_water_gas, values='Länge', index=[
-            'Innendurchmesser', 'Material'], aggfunc='sum')
-        # Add pivot table for Wasser- und Gasleitungen to new sheet
-        pivot_table_water_gas.to_excel(
-            writer, sheet_name='Wasser_Gas_Auswertung')
+        # Check first if entities exist in IFC file to prevent key error
+        if (len(qto_water_gas) > 0):
+            # Write Wasser- und Gasleitungen DataFrame to Excel
+            df_water_gas = pd.DataFrame(qto_water_gas)
+            df_water_gas.to_excel(writer, sheet_name='Wasser_Gas', index=False)
+            # Create pivot table for Wasser- und Gasleitungen
+            df_filtered_water_gas = df_water_gas[df_water_gas['Baustatus'] == '1']
+            pivot_table_water_gas = pd.pivot_table(df_filtered_water_gas, values='Länge', index=[
+                'Innendurchmesser', 'Material'], aggfunc='sum')
+            # Add pivot table for Wasser- und Gasleitungen to new sheet
+            pivot_table_water_gas.to_excel(
+                writer, sheet_name='Wasser_Gas_Auswertung')
 
-        # Write Haltungen, Leitungen DataFrame to Excel
-        df_sewers = pd.DataFrame(qto_sewers)
-        df_sewers.to_excel(
-            writer, sheet_name='Haltungen_Leitungen', index=False)
-        # Create pivot table for Haltungen, Leitungen
-        df_filtered_sewers = df_sewers[df_sewers['Baustatus'] == '1']
-        pivot_table_sewers = pd.pivot_table(df_filtered_sewers, values='Rohrlänge', index=[
-            'Typ', 'Material'], aggfunc='sum')
-        # Add pivot table for Haltungen, Leitungen to new sheet
-        pivot_table_sewers.to_excel(
-            writer, sheet_name='Haltungen_Leitungen_Auswertung')
+        if (len(qto_sewers) > 0):
+            # Write Haltungen, Leitungen DataFrame to Excel
+            df_sewers = pd.DataFrame(qto_sewers)
+            df_sewers.to_excel(
+                writer, sheet_name='Haltungen_Leitungen', index=False)
+            # Create pivot table for Haltungen, Leitungen
+            df_filtered_sewers = df_sewers[df_sewers['Baustatus'] == '1']
+            pivot_table_sewers = pd.pivot_table(df_filtered_sewers, values='Rohrlänge', index=[
+                'Typ', 'Material'], aggfunc='sum')
+            # Add pivot table for Haltungen, Leitungen to new sheet
+            pivot_table_sewers.to_excel(
+                writer, sheet_name='Haltungen_Leitungen_Auswertung')
 
-        # Write Straßeneinläufe DataFrame to Excel
-        df_inlets = pd.DataFrame(qto_inlets)
-        df_inlets.to_excel(writer, sheet_name='Straßeneinläufe', index=False)
-        # Create pivot table for Straßeneinläufe
-        pivot_table_inlets = pd.pivot_table(df_inlets, values='Tiefe', index=[
-            'Bezeichnung'], aggfunc='count')
-        # Add pivot table for Straßeneinläufe to new sheet
-        pivot_table_inlets.to_excel(
-            writer, sheet_name='Straßeneinläufe_Auswertung')
+        if (len(qto_inlets) > 0):
+            # Write Straßeneinläufe DataFrame to Excel
+            df_inlets = pd.DataFrame(qto_inlets)
+            df_inlets.to_excel(
+                writer, sheet_name='Straßeneinläufe', index=False)
+            # Create pivot table for Straßeneinläufe
+            pivot_table_inlets = pd.pivot_table(df_inlets, values='Tiefe', index=[
+                'Bezeichnung'], aggfunc='count')
+            # Add pivot table for Straßeneinläufe to new sheet
+            pivot_table_inlets.to_excel(
+                writer, sheet_name='Straßeneinläufe_Auswertung')
 
-        # Write Schächte DataFrame to Excel
-        df_manholes = pd.DataFrame(qto_manholes)
+        if (len(qto_manholes) > 0):
+            # Write Schächte DataFrame to Excel
+            df_manholes = pd.DataFrame(qto_manholes)
 
-        # Add the new column to the dataframe
-        df_manholes.to_excel(
-            writer, sheet_name='Schächte', index=False)
+            # Add the new column to the dataframe
+            df_manholes.to_excel(
+                writer, sheet_name='Schächte', index=False)
 
-        # Create pivot table for Schächte. group and count by depth range
-        df_filtered_manholes = df_manholes[df_manholes['Baustatus'] == '1']
-        pivot_table_manholes = pd.pivot_table(df_filtered_manholes, values="Tiefe", index=[
-            'Typ', 'Durchmesser', 'Tiefenbereich'], aggfunc='count').rename(columns={'Tiefe': 'Anzahl'})
-        # Add pivot table for Schächte to new sheet
-        pivot_table_manholes.to_excel(
-            writer, sheet_name='Schächte_Auswertung')
+            # Create pivot table for Schächte. group and count by depth range
+            df_filtered_manholes = df_manholes[df_manholes['Baustatus'] == '1']
+            pivot_table_manholes = pd.pivot_table(df_filtered_manholes, values="Tiefe", index=[
+                'Typ', 'Durchmesser', 'Tiefenbereich'], aggfunc='count').rename(columns={'Tiefe': 'Anzahl'})
+            # Add pivot table for Schächte to new sheet
+            pivot_table_manholes.to_excel(
+                writer, sheet_name='Schächte_Auswertung')
 
-        # Find manholes with multiple incoming sewers. For this we make use of the "Von-Schacht" column
-        # and count the number of occurences of each value. We then filter for those that occur more than once.
-        df_multiple_inlets = df_sewers[df_sewers['Von-Schacht'].notnull()]
-        df_multiple_inlets = df_multiple_inlets[df_multiple_inlets.duplicated(
-            subset='Von-Schacht', keep=False)]
-        df_multiple_inlets.to_excel(
-            writer, sheet_name='Zusätzliche Anschlüsse', index=False)
+            # Find manholes with multiple incoming sewers. For this we make use of the "Von-Schacht" column
+            # and count the number of occurences of each value. We then filter for those that occur more than once.
+            df_multiple_inlets = df_sewers[df_sewers['Von-Schacht'].notnull()]
+            df_multiple_inlets = df_multiple_inlets[df_multiple_inlets.duplicated(
+                subset='Von-Schacht', keep=False)]
+            df_multiple_inlets.to_excel(
+                writer, sheet_name='Zusätzliche Anschlüsse', index=False)
 
 
 def get(ifc_file_path: str) -> None:
