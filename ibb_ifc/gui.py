@@ -3,6 +3,9 @@ from customtkinter import filedialog
 import os
 from PIL import ImageTk
 
+from ibb_ifc.lib import bbsoft
+from ibb_ifc.lib import quantity_takeoff as qto
+
 # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_appearance_mode("System")
 # Themes: "blue" (standard), "green", "dark-blue"
@@ -25,14 +28,35 @@ class App(customtkinter.CTk):
 
         # build ui
         # Use CTkButton instead of tkinter Button
-        button = customtkinter.CTkButton(
+        self.button = customtkinter.CTkButton(
             master=self, text="IFC-Datei auswählen", command=self._select_file)
-        button.place(relx=0.5, rely=0.5, anchor=customtkinter.CENTER)
+        self.button.place(relx=0.5, rely=0.5, anchor=customtkinter.CENTER)
+
+    def _process_ifc_file(self):
+        # Show loading indicator on button
+        self.progressbar = customtkinter.CTkProgressBar(
+            self, orientation="horizontal", mode="indeterminate")
+        self.progressbar.place(relx=0.5, rely=0.6, anchor=customtkinter.CENTER)
+        self.progressbar.start()
+
+        self.update()  # Update the UI to show the progress bar
+        self.update_idletasks()  # Force an immediate update of the UI
+
+        processed_file_path = bbsoft.process(self.ifc_file_path)
+        qto.get(processed_file_path)
+
+        self.progressbar.stop()
+        self.progressbar.destroy()
+        # Show message box
+        self.label = customtkinter.CTkLabel(
+            master=self, text="Die IFC-Datei wurde erfolgreich verarbeitet.")
+        self.label.place(relx=0.5, rely=0.7, anchor=customtkinter.CENTER)
 
     def _select_file(self):
         self.ifc_file_path = filedialog.askopenfilename(
             filetypes=[("IFC-Dateien", ".ifc")])
-        print(self.ifc_file_path)
+        if self.ifc_file_path:
+            self._process_ifc_file()
 
 
 if __name__ == "__main__":
