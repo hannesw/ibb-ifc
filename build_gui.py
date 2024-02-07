@@ -1,14 +1,19 @@
+import os
 import subprocess
+
+logo_path = os.path.join(os.path.dirname(__file__), "assets", "logo-ibb.png")
+assets_path = os.path.join(os.path.dirname(__file__), "assets")
+entry_path = os.path.join(os.path.dirname(__file__), "ibb_ifc", "gui.py")
 
 
 def build_app():
     cmd = [
         "poetry", "run", "pyinstaller", "--onefile",
         "--name=IBB-IFC",
-        "--icon=assets/logo-ibb.png",
-        "--hidden-import",
-        "tkinter",
-        "ibb_ifc\\gui.py",
+        f"--icon={logo_path}",
+        "--windowed",
+        # f"--add-data={assets_path}:assets",
+        entry_path
     ]
 
     # Execute the command

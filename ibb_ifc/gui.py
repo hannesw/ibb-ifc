@@ -21,10 +21,11 @@ class App(customtkinter.CTk):
         # ui setup
         self.title("IBB IFC-Verarbeitung")
         self.geometry("400x240")
-        self.iconpath = ImageTk.PhotoImage(
-            file=os.path.join(".", "assets", "logo-ibb.png"))
-        self.wm_iconbitmap()
-        self.iconphoto(False, self.iconpath)
+        # Icon disabled due to probelms with pyinstaller and --add-data flag
+        # self.iconpath = ImageTk.PhotoImage(
+        # file=os.path.join(".", "assets", "logo-ibb.png"))
+        # self.wm_iconbitmap()
+        # self.iconphoto(False, self.iconpath)
 
         # build ui
         # Use CTkButton instead of tkinter Button
