@@ -1,6 +1,6 @@
 # BBSoft IFC-Verarbeitung
 
-Diese Skripte verarbeiten eine von BBSoft erzeugte IFC-Datei. Hierbei werden verschiedene Korrekturen vorgenommen:
+Diese Skripte verarbeiten eine von [BBSoft®](https://bbsoft.de/cont/cont_software.php) erzeugte IFC-Datei. Hierbei werden verschiedene Korrekturen vorgenommen:
 
 - Verwendung von gültigen IfcPropertyTypes. Standardmäßig werden alle Datenbankfelder als String ausgegeben. Diese macht eine Weiterverarbeitung z. B. mit einem AVA-Programm sehr schwierig.
 - Die Textfragmente "(ed.)" und "(ber.)" werden aus den Kanalhaltungen entfernt.
