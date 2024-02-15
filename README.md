@@ -1,3 +1,5 @@
+**Hinweis: Das Programm ist in einer sehr frühen Phase und nicht ohne weiteres lauffähig.***
+
 # BBSoft IFC-Verarbeitung
 
 Diese Skripte verarbeiten eine von [BBSoft®](https://bbsoft.de/cont/cont_software.php) erzeugte IFC-Datei. Hierbei werden verschiedene Korrekturen vorgenommen:
