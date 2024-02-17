@@ -1,34 +1,27 @@
-import argparse
+import click
 import time
 import lib.bbsoft as bbsoft
 import lib.quantity_takeoff as qto
 
 
-def main():
-    # Create the argument parser
-    parser = argparse.ArgumentParser(description='Process IFC file.')
-    # Add the argument for the IFC file path
-    parser.add_argument('ifc_file_path', type=str, help='Path to the IFC file')
-    # Add the argument for skipping processing
-    parser.add_argument('--skip-processing',
-                        action='store_true', help='Skip the processing step')
-    # Parse the arguments
-    args = parser.parse_args()
-    # Access the value of the ifc_file_path argument
-    ifc_file_path = args.ifc_file_path
+@click.command()
+@click.argument('ifc_file_path', type=click.Path(exists=True))
+@click.option('--skip-processing', is_flag=True, help='Skip the processing step if file was already processed.)')
+def main(ifc_file_path, skip_processing):
     # check if file has the correct ending
     if not ifc_file_path.endswith(".ifc"):
         raise ValueError("Invalid file format. Only IFC files are supported.")
 
     # Call bbsoft processing
-    if not args.skip_processing:
+    if not skip_processing:
         start = time.time()
         processed_file_path = bbsoft.process(ifc_file_path)
         end = time.time()
-        print(f"BBSoft rocessing time: {round(end - start)} seconds")
+        print(f"BBSoft processing time: {round(end - start)} seconds")
     else:
         processed_file_path = ifc_file_path
         print("Skipping processing")
+
     # Call quantity takeoff
     start = time.time()
     qto.get(processed_file_path)
