@@ -19,6 +19,10 @@ dimension_factors = {
         "factor": 0.01,
         "unit": "%"
     },
+    "‰": {
+        "factor": 0.001,
+        "unit": "‰"
+    },
 }
 
 replacing_properties = [
@@ -29,7 +33,7 @@ replacing_properties = [
     ["ABS_2X", dimension_factors["m"]],  # Rechtswert unten
     ["ABS_2Y", dimension_factors["m"]],  # Hochwert unten
     ["ABS_2Z", dimension_factors["m"]],  # Höhe unten
-    ["HYD_GRAD_PP", dimension_factors["%"]],  # Rohrgefälle
+    ["HYD_GRAD_PP", dimension_factors["‰"]],  # Rohrgefälle in Promille!
     ["HYD_LEN", dimension_factors["m"]],  # Haltungslänge
     ["HYD_OCCUP", dimension_factors["%"]],  # Hydraulische Auslastung
     ["HYD_PROFH", dimension_factors["mm"]],  # Profilhöhe
@@ -56,10 +60,13 @@ replacing_properties = [
     ["LENGTH", dimension_factors["m"]],  # Rohrlänge
 ]
 
-processed_flag = "IBB Woern Ingenieure - processed"
+processed_flag = "IBB IFC"
 
 
 def _to_float(value):
+    # check if value is already a float
+    if isinstance(value, float):
+        return value
     value = value.replace(" ", "").replace("(ber.)", "").replace("(ed.)", "")
     if value == "":
         return None
@@ -117,8 +124,6 @@ def _change_property_type(model, name, dimension_factor):
 
 def process(ifc_file_path) -> str:
     print(f"Opening {ifc_file_path}")
-    new_file_path = os.path.splitext(ifc_file_path)[0] + "_processed.ifc"
-    print(f"New file path will be {new_file_path}")
     model = ifcopenshell.open(ifc_file_path)
 
     # Get modifing organizations
@@ -128,6 +133,9 @@ def process(ifc_file_path) -> str:
         if processed_flag in org.Name:
             print(f"File is already processed")
             return ifc_file_path
+
+    new_file_path = os.path.splitext(ifc_file_path)[0] + "_processed.ifc"
+    print(f"New file path will be {new_file_path}")
 
     print(f"Correcting manhole names")
     _correct_manhole_names(model)

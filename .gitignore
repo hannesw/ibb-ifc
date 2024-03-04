@@ -16,7 +16,6 @@ build/
 
 # Poetry
 .poetry/
-poetry.lock
 
 # Virtual Environment
 .venv/
@@ -37,3 +36,4 @@ env/
 # sample ifc files
 *.ifc
 *.xlsx
+*.dxf
