@@ -56,7 +56,7 @@ def run(ifc_file_path: str) -> None:
                           dxfattribs={'color': 1, 'char_height': 0.6, 'attachment_point': 5}).set_location((coords[0], coords[1]))
 
         laterals = ifcopenshell.util.selector.filter_elements(
-            model, "IfcFlowSegment,Leitung.ID_NAME != NULL")
+            model, "IfcFlowTreatmentDevice,Leitung.ID_NAME != NULL")
         for l in laterals:
             pset = ifcopenshell.util.element.get_pset(l, "Leitung")
             # Skip if keyerror
@@ -70,7 +70,7 @@ def run(ifc_file_path: str) -> None:
                 # coords = _coords(l) # This is a more general approach but makes it difficult to identify the lateral
                 coords = _sewer_midpoint(pset)
                 msp.add_circle(center=(coords[0], coords[1]),
-                               radius=3, dxfattribs={'color': 1})
+                               radius=3, dxfattribs={'color': 5})
                 msp.add_mtext(f"Gefälle: {round(slope * 1000, 1)} ‰",
                               dxfattribs={'color': 5, 'char_height': 0.6, 'attachment_point': 5}).set_location((coords[0], coords[1]))
 
