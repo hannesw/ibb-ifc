@@ -1,0 +1,7 @@
+ifcopenshell
+lark
+numpy
+pandas
+xlsxwriter
+click
+ezdxf

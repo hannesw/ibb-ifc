@@ -2,7 +2,7 @@ import click
 import time
 import lib.bbsoft as bbsoft
 import lib.quantity_takeoff as qto
-import ibb_ifc.lib.model_checker as model_checker
+import lib.model_checker as model_checker
 
 
 @click.command()

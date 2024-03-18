@@ -112,7 +112,11 @@ def _change_property_type(model, name, dimension_factor):
         value *= dimension_factor["factor"]
         if dimension_factor["unit"] == "%":
             ratio_measure = model.create_entity(
-                "IfcRatioMeasure", value)
+                "IfcRatioMeasure", round(value, 4))
+            prop.NominalValue = ratio_measure
+        if dimension_factor["unit"] == "‰":
+            ratio_measure = model.create_entity(
+                "IfcRatioMeasure", round(value, 4))
             prop.NominalValue = ratio_measure
         else:
             length_measure = model.create_entity(
