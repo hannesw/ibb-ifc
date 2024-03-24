@@ -3,26 +3,11 @@ import os
 import ifcopenshell.util.selector
 
 dimension_factors = {
-    "m": {
-        "factor": 1,
-        "unit": "m"
-    },
-    "cm": {
-        "factor": 0.01,
-        "unit": "cm"
-    },
-    "mm": {
-        "factor": 0.001,
-        "unit": "mm"
-    },
-    "%": {
-        "factor": 0.01,
-        "unit": "%"
-    },
-    "‰": {
-        "factor": 0.001,
-        "unit": "‰"
-    },
+    "m": {"factor": 1, "unit": "m"},
+    "cm": {"factor": 0.01, "unit": "cm"},
+    "mm": {"factor": 0.001, "unit": "mm"},
+    "%": {"factor": 0.01, "unit": "%"},
+    "‰": {"factor": 0.001, "unit": "‰"},
 }
 
 replacing_properties = [
@@ -42,7 +27,6 @@ replacing_properties = [
     ["LENGTH3D", dimension_factors["m"]],  # Rohrlänge (3D)
     ["OWN_1Z", dimension_factors["m"]],  # Tiefe oben
     ["OWN_2Z", dimension_factors["m"]],  # Tiefe unten
-
     # Schächte
     ["POS_DZ", dimension_factors["m"]],  # Schachttiefe
     ["POS_X", dimension_factors["m"]],  # Rechtswert
@@ -51,7 +35,6 @@ replacing_properties = [
     ["SIZE_A", dimension_factors["m"]],  # Schachtdurchmesser/-breite
     ["SIZE_B", dimension_factors["m"]],  # Länge
     ["WALL_TCHICKNESS", dimension_factors["mm"]],  # Wandstärke
-
     # Wasserleitungen
     ["DIA", dimension_factors["mm"]],  # Rohrdurchmesser innen
     ["DIA_NOM", dimension_factors["mm"]],  # Rohrdurchmesser Nenngröße
@@ -75,7 +58,8 @@ def _to_float(value):
 
 def _correct_manhole_names(model):
     sewers = ifcopenshell.util.selector.filter_elements(
-        model, "IfcFlowSegment,Haltung.ID_NAME != NULL")
+        model, "IfcFlowSegment,Haltung.ID_NAME != NULL"
+    )
     for s in sewers:
         pset = ifcopenshell.util.element.get_pset(s, "Haltung")
         # Skip if keyerror
@@ -86,7 +70,8 @@ def _correct_manhole_names(model):
             continue
 
     branches = ifcopenshell.util.selector.filter_elements(
-        model, "IfcFlowTreatmentDevice")
+        model, "IfcFlowTreatmentDevice"
+    )
     for b in branches:
         pset = ifcopenshell.util.element.get_pset(b, "Leitung")
         # Skip if keyerror
@@ -99,8 +84,7 @@ def _correct_manhole_names(model):
 
 def _change_property_type(model, name, dimension_factor):
     properties = ifcopenshell.util.selector.filter_elements(
-        model,
-        f"IfcPropertySingleValue, Name={name}"
+        model, f"IfcPropertySingleValue, Name={name}"
     )
 
     total = len(properties)
@@ -111,16 +95,13 @@ def _change_property_type(model, name, dimension_factor):
 
         value *= dimension_factor["factor"]
         if dimension_factor["unit"] == "%":
-            ratio_measure = model.create_entity(
-                "IfcRatioMeasure", round(value, 4))
+            ratio_measure = model.create_entity("IfcRatioMeasure", round(value, 4))
             prop.NominalValue = ratio_measure
         if dimension_factor["unit"] == "‰":
-            ratio_measure = model.create_entity(
-                "IfcRatioMeasure", round(value, 4))
+            ratio_measure = model.create_entity("IfcRatioMeasure", round(value, 4))
             prop.NominalValue = ratio_measure
         else:
-            length_measure = model.create_entity(
-                "IfcPositiveLengthMeasure", value)
+            length_measure = model.create_entity("IfcPositiveLengthMeasure", value)
             prop.NominalValue = length_measure
 
     print(f"\tChanged {total} properties {name}")
@@ -135,25 +116,25 @@ def process(ifc_file_path) -> str:
     # Check if it was already processed. If so return the file path and skip further processing
     for org in organizations:
         if processed_flag in org.Name:
-            print(f"File is already processed")
+            print("File is already processed")
             return ifc_file_path
 
     new_file_path = os.path.splitext(ifc_file_path)[0] + "_processed.ifc"
     print(f"New file path will be {new_file_path}")
 
-    print(f"Correcting manhole names")
+    print("Correcting manhole names")
     _correct_manhole_names(model)
 
-    print(f"Changing property types:")
+    print("Changing property types:")
     for name, dimension_factor in replacing_properties:
         _change_property_type(model, name, dimension_factor)
 
-    print(f"Adding processed flag")
+    print("Adding processed flag")
     organization = model.create_entity("IfcOrganization")
     organization.Name = processed_flag
     organizations.append(organization)
 
-    print(f"Saving modified file")
+    print("Saving modified file")
     model.write(new_file_path)
     print(f"Modified IFC file saved as {new_file_path}")
 
