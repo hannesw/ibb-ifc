@@ -6,9 +6,9 @@ import lib.model_checker as model_checker
 
 
 @click.command()
-@click.option('--checks', is_flag=True, help="Run checks on the IFC file")
-@click.option('--quantity-takeoff', is_flag=True, help="Also create a quantity takeoff")
-@click.argument('ifc_file_path', type=click.Path(exists=True))
+@click.option("--checks", is_flag=True, help="Run checks on the IFC file")
+@click.option("--quantity-takeoff", is_flag=True, help="Also create a quantity takeoff")
+@click.argument("ifc_file_path", type=click.Path(exists=True))
 def main(ifc_file_path, checks, quantity_takeoff):
     # check if file has the correct ending
     if not ifc_file_path.endswith(".ifc"):
@@ -35,5 +35,5 @@ def main(ifc_file_path, checks, quantity_takeoff):
         print(f"Quantity takeoff time: {round(end - start)} seconds")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
