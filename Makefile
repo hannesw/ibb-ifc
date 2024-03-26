@@ -1,10 +1,14 @@
 all: cli gui gui-dev
 
 cli:
-	pyinstaller --onefile --noconfirm main.py -n cli
+	pyinstaller --onefile --noconfirm $(CLI_HELPER_OUTPUT) main.py -n cli
 
 gui:
-	pyinstaller --windowed --noconfirm --onedir gui.py -n gui
+	pyinstaller --onedir --noconfirm --windowed $(GUI_HELPER_OUTPUT) gui.py -n gui
 
 gui-dev:
-	pyinstaller --onedir --noconfirm gui.py -n gui-dev
+	pyinstaller --onedir --noconfirm $(GUI_HELPER_OUTPUT) gui.py -n gui-dev
+
+GUI_HELPER_OUTPUT := $(shell python make_helper.py --target=gui)
+
+CLI_HELPER_OUTPUT := $(shell python make_helper.py --target=cli)
