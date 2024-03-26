@@ -9,7 +9,9 @@ Dieses Programm verarbeitete eine von [BBSoft®](https://bbsoft.de/cont/cont_sof
 - An die Schachtnamen wird standardmäßig ein ",-" bzw. falls vorhanden der Straßenname hinzugefügt. Dieses wird entfernt.
 - Verschiedene Angaben werden in die korrekte Einheit (z. B. Meter) umgewandelt.
 
-# Verwendung
+# Verwendung / Download
+
+Aktuelle Binaries für Windows können [hier bei Github](https://github.com/ibb-woern/ibb-ifc/releases) heruntergeladen werden.
 
 Für die graphische Benutzoberfläche starten der `gui.exe`.
 
